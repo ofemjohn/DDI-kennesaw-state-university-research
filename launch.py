@@ -68,7 +68,7 @@ def test_rag_pipeline():
     print("🧪 Testing Complete RAG Pipeline...")
     
     try:
-        from rag_pipeline import DrugRAGPipeline
+        from backend.pipeline_full import DrugRAGPipeline
         
         # Initialize pipeline
         pipeline = DrugRAGPipeline()
@@ -108,7 +108,7 @@ def test_retrieval():
     print("🔍 Testing Retrieval Module...")
     
     try:
-        from retrieval.test_retrieval import main as test_retrieval_main
+        from backend.retrieval.test_retrieval import main as test_retrieval_main
         test_retrieval_main()
     except Exception as e:
         print(f"❌ Error testing retrieval: {e}")
@@ -120,7 +120,7 @@ def test_llm_generation():
     print("🤖 Testing LLM Generation...")
     
     try:
-        from generation.drug_llm import main as test_llm_main
+        from backend.generation.drug_llm import main as test_llm_main
         test_llm_main()
     except Exception as e:
         print(f"❌ Error testing LLM: {e}")
@@ -132,7 +132,7 @@ def check_system_status():
     print("📊 Checking System Status...")
     
     try:
-        from rag_pipeline import DrugRAGPipeline
+        from backend.pipeline_full import DrugRAGPipeline
         
         pipeline = DrugRAGPipeline()
         health = pipeline.health_check()

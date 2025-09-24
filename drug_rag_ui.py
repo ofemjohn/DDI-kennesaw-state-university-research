@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 sys.path.append(str(Path(__file__).parent))
 
 # Import the complete pipeline
-from rag_pipeline import DrugRAGPipeline
+from backend.pipeline_full import DrugRAGPipeline
 
 load_dotenv()
 
