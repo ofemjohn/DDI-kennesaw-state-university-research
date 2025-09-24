@@ -1,0 +1,8 @@
+# Ignore backend virtual environment and artifacts
+backend/.venv/
+# Common Python ignores
+__pycache__/
+*.py[cod]
+*.egg-info/
+# Chroma DB artifacts (if generated locally)
+drug_vector_db/
