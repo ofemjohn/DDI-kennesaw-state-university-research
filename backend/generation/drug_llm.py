@@ -8,8 +8,9 @@ from dotenv import load_dotenv
 # LangChain imports
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
-from langchain_openai import ChatOpenAI
-from langchain_core.pydantic_v1 import BaseModel, Field
+from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline as hf_pipeline
+from langchain.llms import HuggingFacePipeline
+from pydantic import BaseModel, Field
 
 # Local imports
 
@@ -52,14 +53,13 @@ class DrugLLM:
     Handles different types of drug queries with appropriate formatting
     """
     
-    def __init__(self, model_name: str = "gpt-4o-mini", temperature: float = 0.1):
+    def __init__(self, model_name: str = "meta-llama/Meta-Llama-3-8B", temperature: float = 0.1, max_new_tokens: int = 512):
         self.model_name = model_name
         self.temperature = temperature
-        self.llm = ChatOpenAI(
-            model=model_name, 
-            temperature=temperature,
-            max_tokens=2000
-        )
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForCausalLM.from_pretrained(model_name)
+        gen_pipeline = hf_pipeline("text-generation", model=model, tokenizer=tokenizer)
+        self.llm = HuggingFacePipeline(pipeline=gen_pipeline)
         
         # Set up different prompt templates
         self.setup_prompts()
@@ -186,11 +186,8 @@ Respond with valid JSON only. If information is not available, use "Not specifie
         
         try:
             # Use JSON mode for structured output
-            structured_llm = ChatOpenAI(
-                model=self.model_name,
-                temperature=self.temperature,
-                model_kwargs={"response_format": {"type": "json_object"}}
-            )
+            # For JSON-like responses with HF, keep using text generation and parse
+            structured_llm = self.llm
             
             safety_json_prompt = ChatPromptTemplate.from_template("""
 Extract drug safety information from the context and format as JSON.

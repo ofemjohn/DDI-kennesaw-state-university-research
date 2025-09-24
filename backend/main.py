@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 from fastapi import FastAPI
 from pydantic import BaseModel
@@ -7,7 +7,7 @@ from backend.pipeline_full import DrugRAGPipeline
 
 
 app = FastAPI(title="ddi-ksu: Drug–Drug Interaction RAG API")
-pipeline: DrugRAGPipeline | None = None
+pipeline: Optional[DrugRAGPipeline] = None
 
 
 class BatchQueryRequest(BaseModel):

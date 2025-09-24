@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 
 from langchain.schema import Document
 from langchain.text_splitter import CharacterTextSplitter
-from langchain_openai import OpenAIEmbeddings
 from langchain_chroma import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 
@@ -18,7 +17,7 @@ class DrugVectorStore:
     
     def __init__(self, 
                  db_name: str = "drug_vector_db",
-                 embedding_model: str = "openai",  # "openai" or "huggingface"
+                 embedding_model: str = "huggingface",
                  chunk_size: int = 1000,
                  chunk_overlap: int = 200):
         
@@ -26,30 +25,18 @@ class DrugVectorStore:
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
         
-        # Initialize embeddings
-        if embedding_model == "openai":
-            # Set up OpenAI API key
-            os.environ['OPENAI_API_KEY'] = os.getenv('OPENAI_API_KEY', 'your-key-if-not-using-env')
-            self.embeddings = OpenAIEmbeddings()
-            print("Using OpenAI embeddings")
-        else:
-            # Use free HuggingFace embeddings
+        # Initialize embeddings (Hugging Face only)
+        try:
+            self.embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+            print("Using HuggingFace embeddings (all-MiniLM-L6-v2)")
+        except Exception as e:
+            print(f"Error loading embedding model: {e}")
+            print("Falling back to paraphrase-MiniLM-L6-v2...")
             try:
-                # Try the standard model first
-                self.embeddings = HuggingFaceEmbeddings(
-                    model_name="all-MiniLM-L6-v2"
-                )
-                print("Using HuggingFace embeddings (all-MiniLM-L6-v2)")
-            except Exception as e:
-                print(f"Error loading embedding model: {e}")
-                print("Falling back to basic model...")
-                try:
-                    self.embeddings = HuggingFaceEmbeddings(
-                        model_name="paraphrase-MiniLM-L6-v2"
-                    )
-                    print("Using HuggingFace embeddings (paraphrase-MiniLM-L6-v2)")
-                except Exception as e2:
-                    raise ValueError(f"Could not load any HuggingFace embedding model. Error: {e2}")
+                self.embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/paraphrase-MiniLM-L6-v2")
+                print("Using HuggingFace embeddings (paraphrase-MiniLM-L6-v2)")
+            except Exception as e2:
+                raise ValueError(f"Could not load any HuggingFace embedding model. Error: {e2}")
         
         # Initialize text splitter
         self.text_splitter = CharacterTextSplitter(

@@ -84,17 +84,17 @@ class DrugRAGPipeline:
             
             # 1. Initialize Vector Store
             self.logger.info(f"Loading vector store: {self.vector_db_name}")
-            self.vector_store = DrugVectorStore(
-                db_name=self.vector_db_name,
-                embedding_model="openai"
-            )
+                self.vector_store = DrugVectorStore(
+                    db_name=self.vector_db_name,
+                    embedding_model="huggingface"
+                )
             
             if not self.vector_store.load_vectorstore():
                 # Try main database as fallback
                 self.logger.warning(f"Test database not found, trying main database...")
                 self.vector_store = DrugVectorStore(
                     db_name="drug_vector_db",
-                    embedding_model="openai"
+                    embedding_model="huggingface"
                 )
                 
                 if not self.vector_store.load_vectorstore():

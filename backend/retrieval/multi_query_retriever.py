@@ -11,7 +11,8 @@ from dotenv import load_dotenv
 # LangChain imports
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import ChatOpenAI
+from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline as hf_pipeline
+from langchain.llms import HuggingFacePipeline
 from langchain.load import dumps, loads
 from langchain_core.runnables import RunnablePassthrough
 from operator import itemgetter
@@ -29,10 +30,13 @@ class DrugMultiQueryRetriever:
     Generates multiple perspectives of drug-related queries for better retrieval
     """
     
-    def __init__(self, vector_store: DrugVectorStore, model_name: str = "gpt-4o-mini"):
+    def __init__(self, vector_store: DrugVectorStore, model_name: str = "meta-llama/Meta-Llama-3-8B"):
         self.vector_store = vector_store
         self.model_name = model_name
-        self.llm = ChatOpenAI(model=model_name, temperature=0)
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForCausalLM.from_pretrained(model_name)
+        gen_pipeline = hf_pipeline("text-generation", model=model, tokenizer=tokenizer)
+        self.llm = HuggingFacePipeline(pipeline=gen_pipeline)
         
         # Get the basic retriever from vector store
         if not vector_store.vectorstore:
