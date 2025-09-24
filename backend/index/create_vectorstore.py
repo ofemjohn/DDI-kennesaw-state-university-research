@@ -12,7 +12,7 @@ def create_production_vectorstore():
     print("=" * 60)
     
     # Check if data exists
-    jsonl_path = "data/processed/fda_documents.jsonl"
+    jsonl_path = str(Path(__file__).resolve().parents[1] / "data/processed/fda_documents.jsonl")
     if not os.path.exists(jsonl_path):
         print(f"❌ Error: {jsonl_path} not found.")
         print("Please run the data ingestion first: python ingest/drug_ingest.py")

@@ -1,6 +1,7 @@
 import os
 import json
 from typing import List, Optional
+from pathlib import Path
 from dotenv import load_dotenv
 
 from langchain.schema import Document
@@ -242,7 +243,7 @@ def main():
     )
     
     # Load documents
-    jsonl_path = "data/processed/fda_documents.jsonl"
+    jsonl_path = str(Path(__file__).resolve().parents[1] / "data/processed/fda_documents.jsonl")
     documents = vector_store.load_documents_from_jsonl(jsonl_path)
     
     # Create vector store
